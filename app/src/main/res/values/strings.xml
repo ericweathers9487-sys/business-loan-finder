@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Business Loan Finder</string>
+    <!-- Replace with your real, public privacy policy page before uploading to Play. -->
+    <string name="privacy_policy_url" translatable="false">https://example.com/privacy</string>
+</resources>
