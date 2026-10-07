@@ -26,7 +26,10 @@ An Android app that helps home services businesses see which business loans they
 1. Create a new **private** repository on github.com.
 2. Upload everything in this folder, including the hidden `.github` folder. (On a computer: unzip, then drag the folder contents onto the repo's "Add file → Upload files" page, or use `git push`.)
 3. Open the repo's **Actions** tab. The "Build Android app" run starts on its own.
-4. When it finishes, download **test-apk-install-on-your-phone** from the run's page and install it on an Android phone. Your phone will ask you to allow installs from that source.
+4. When it finishes, the APK is posted under the repo's **Releases**. On an Android phone, open
+   `https://github.com/<you>/<repo>/releases/latest/download/business-loan-finder.apk`
+   and tap the download to install. Your phone will ask you to allow installs from your browser.
+   (The same file is also on the run's page as **test-apk-install-on-your-phone**, inside a zip.)
 
 ## Or build it in Android Studio
 
