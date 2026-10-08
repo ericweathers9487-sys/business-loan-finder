@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Themed icon (Android 13+): the system tints this shape to match the wallpaper. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Drawn in the 512px Play Store icon's coordinates, scaled into the 72dp visible area. -->
+    <group
+        android:translateX="18"
+        android:translateY="18"
+        android:scaleX="0.140625"
+        android:scaleY="0.140625">
+        <path
+            android:pathData="M101,256 A155,155 0 1,1 411,256 A155,155 0 1,1 101,256 Z"
+            android:strokeAlpha="0.3"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeWidth="44" />
+        <group
+            android:pivotX="256"
+            android:pivotY="256"
+            android:rotation="-90">
+            <path
+                android:pathData="M411,256 A155,155 0 1,1 333.5,121.77"
+                android:strokeColor="#FFFFFFFF"
+                android:strokeLineCap="round"
+                android:strokeWidth="44" />
+        </group>
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M291.2,174.4 L306.6,174.4 Q311,174.4 311,178.8 L311,225 Q311,229.4 306.6,229.4 L291.2,229.4 Q286.8,229.4 286.8,225 L286.8,178.8 Q286.8,174.4 291.2,174.4 Z" />
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M269.3,179.33 L346.69,246.4 Q355,253.6 344,253.6 L330.8,253.6 Q324.2,253.6 324.2,260.2 L324.2,328.4 Q324.2,343.8 308.8,343.8 L278,343.8 Q274.7,343.8 274.7,340.5 L274.7,302 Q274.7,288.8 261.5,288.8 L250.5,288.8 Q237.3,288.8 237.3,302 L237.3,340.5 Q237.3,343.8 234,343.8 L203.2,343.8 Q187.8,343.8 187.8,328.4 L187.8,260.2 Q187.8,253.6 181.2,253.6 L168,253.6 Q157,253.6 165.31,246.4 L242.7,179.33 Q256,167.8 269.3,179.33 Z" />
+    </group>
+</vector>
