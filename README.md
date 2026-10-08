@@ -19,7 +19,8 @@ An Android app that helps home services businesses see which business loans they
 | `core/.../catalog/SampleProducts.kt` | Four **sample** lenders for testing. Not real. Replace them. The app and server both read this list. |
 | `core/.../api/` | The format the app uses to send a lead to the server. |
 | `app/src/main/java/.../leads/` | Where leads go. With no server set, leads stay on the phone (test mode). |
-| `app/src/main/java/.../ui/` | The screens. |
+| `app/src/main/java/.../ui/` | The screens. Colors, type, and shapes live in `Theme.kt`; light and dark mode are both supported. |
+| `app/src/main/res/font/` | Plus Jakarta Sans, the app's typeface. Free under the SIL Open Font License; the license ships in the app (`assets/licenses/`). |
 | `server/` | The lead server: re-checks, stores (encrypted), audits, and routes leads to lenders. See [server/README.md](server/README.md). |
 | `core/src/test/`, `server/src/test/` | Unit tests for the engine, routing gate, lead format, and server. |
 | `.github/workflows/android.yml` | Builds the app and the server image on GitHub, no computer setup needed. |
