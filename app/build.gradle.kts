@@ -9,6 +9,10 @@ plugins {
 // Optional: -PleadEndpoint=https://your-backend.example/leads
 // Leave unset during the beta and leads stay on the device (test mode).
 val leadEndpoint: String = (findProperty("leadEndpoint") as String?) ?: ""
+// Borrower contact details must never travel unencrypted.
+require(leadEndpoint.isEmpty() || leadEndpoint.startsWith("https://")) {
+    "leadEndpoint must start with https:// (got \"$leadEndpoint\")"
+}
 
 android {
     namespace = "com.yourco.lending"
@@ -68,6 +72,8 @@ kotlin {
 }
 
 dependencies {
+    implementation(project(":core"))
+
     val composeBom = platform("androidx.compose:compose-bom:2025.09.01")
     implementation(composeBom)
     implementation("androidx.compose.ui:ui")
@@ -78,6 +84,4 @@ dependencies {
     implementation("androidx.activity:activity-ktx:1.11.0")
     implementation("androidx.activity:activity-compose:1.11.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
-
-    testImplementation("junit:junit:4.13.2")
 }

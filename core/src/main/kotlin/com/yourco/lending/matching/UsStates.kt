@@ -1,6 +1,6 @@
-package com.yourco.lending.ui
+package com.yourco.lending.matching
 
-/** USPS code to name, for the state picker. */
+/** USPS code to name, for the state picker and the server's input check. */
 val US_STATES: List<Pair<String, String>> = listOf(
     "AL" to "Alabama", "AK" to "Alaska", "AZ" to "Arizona", "AR" to "Arkansas",
     "CA" to "California", "CO" to "Colorado", "CT" to "Connecticut", "DE" to "Delaware",

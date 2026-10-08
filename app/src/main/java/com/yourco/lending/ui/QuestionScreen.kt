@@ -31,6 +31,7 @@ import com.yourco.lending.matching.LoanPurpose
 import com.yourco.lending.matching.Question
 import com.yourco.lending.matching.RevenueBand
 import com.yourco.lending.matching.TimeInBusiness
+import com.yourco.lending.matching.US_STATES
 
 @Composable
 fun QuestionScreen(screen: Screen.Ask, state: UiState, vm: DiscoveryViewModel) {

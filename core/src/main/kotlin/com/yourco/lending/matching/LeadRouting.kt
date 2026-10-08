@@ -1,5 +1,6 @@
 package com.yourco.lending.matching
 
+import kotlinx.serialization.Serializable
 import java.util.UUID
 
 /**
@@ -30,6 +31,7 @@ object Disclosures {
         "Test mode: this is a sample lender used for the beta. Nothing is sent to a real lender."
 }
 
+@Serializable
 data class BorrowerContact(
     val fullName: String,
     val businessName: String,
@@ -44,16 +46,26 @@ data class BorrowerContact(
         if (!EMAIL.matches(email.trim())) add("Enter a valid email.")
         val d = phoneDigits
         if (!(d.length == 10 || (d.length == 11 && d.startsWith("1")))) add("Enter a 10-digit US phone number.")
+        if (listOf(fullName, businessName, email, phone).any { it.length > MAX_FIELD_LENGTH }) {
+            add("Keep each entry under $MAX_FIELD_LENGTH characters.")
+        }
     }
 
     fun isComplete(): Boolean = problems().isEmpty()
 
-    private companion object {
-        val EMAIL = Regex("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")
+    /** Trimmed, with the phone reduced to digits. This is the form that leaves the phone. */
+    fun normalized() = BorrowerContact(fullName.trim(), businessName.trim(), email.trim(), phoneDigits)
+
+    companion object {
+        /** The app's text fields stop at this length; the server rejects anything longer. */
+        const val MAX_FIELD_LENGTH = 120
     }
 }
 
+private val EMAIL = Regex("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")
+
 /** Consent to share with one specific lender product, on one disclosure version. */
+@Serializable
 data class BorrowerConsent(
     val productId: String,
     val disclosureVersion: String,
@@ -65,6 +77,7 @@ data class BorrowerConsent(
  * Contact details travel separately and should only be released to the
  * lender after they accept the lead.
  */
+@Serializable
 data class LeadCard(
     val leadId: String,
     val borrowerRef: String,
@@ -82,13 +95,21 @@ data class LeadCard(
     val isSample: Boolean,
 )
 
-enum class LeadEventType { CREATED, SENT, ACCEPTED, REJECTED, FUNDED }
+enum class LeadEventType {
+    CREATED, SENT, ACCEPTED, REJECTED, FUNDED,
+    /** Server only: contact details and answers were erased (deletion request or retention limit). */
+    PERSONAL_DATA_DELETED,
+}
 
 /** Audit trail entry. The backend appends these; the app only writes CREATED. */
+@Serializable
 data class LeadEvent(val type: LeadEventType, val atEpochMillis: Long, val note: String = "")
 
+@Serializable
 data class Lead(
     val card: LeadCard,
+    /** Exactly what the borrower answered. The server re-runs the engine on these. */
+    val answers: DiscoveryAnswers,
     val contact: BorrowerContact,
     val consent: BorrowerConsent,
     val events: List<LeadEvent>,
@@ -150,7 +171,7 @@ class LeadRouter(
             isSample = product.isSample,
         )
         return RoutingDecision.Route(
-            Lead(card, contact, consent, listOf(LeadEvent(LeadEventType.CREATED, now)))
+            Lead(card, answers, contact, consent, listOf(LeadEvent(LeadEventType.CREATED, now)))
         )
     }
 }

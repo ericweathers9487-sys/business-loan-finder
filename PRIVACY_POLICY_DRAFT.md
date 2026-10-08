@@ -19,19 +19,21 @@ We don't check your credit, and the app doesn't access your contacts, photos, or
 
 ## Who we share it with
 
-Only the lender you pick, and only after you check the consent box for that lender. We don't sell your information. [Describe any service providers, e.g. hosting.]
+Only the lender you pick, and only after you check the consent box for that lender. That lender first sees a summary without your name or contact details. They receive your name, email, phone, and answers only if they accept your request. We don't sell your information. [Describe any service providers, e.g. hosting.]
 
 ## How long we keep it
 
-[e.g. We keep lead records for X months, then delete them, unless the law requires longer.]
+We delete your name, business name, email, phone number, and answers [365] days after you send them to a lender. We keep a record without those details (which lender, the summary they saw, and when you gave consent) [for X years / as the law requires].
+
+If you don't send your details to a lender, they never leave your phone.
 
 ## Your choices
 
-You can ask us to delete your information by emailing [contact email]. Lenders you shared with keep their own records under their own privacy policies.
+You can ask us to delete your information by emailing [contact email] from the address you gave us. We erase your contact details and answers from every request you made. Lenders who already accepted your request keep their own records under their own privacy policies.
 
 ## Security
 
-Information sent from the app to our servers is encrypted in transit. [Describe storage security.]
+Information sent from the app to our servers is encrypted in transit (HTTPS). On our servers, your contact details and answers are encrypted at rest (AES-256) and released only to the lender you chose, after they accept your request. [Describe hosting provider and who on your team can access the server.]
 
 ## Children
 
