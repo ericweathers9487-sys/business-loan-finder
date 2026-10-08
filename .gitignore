@@ -9,3 +9,7 @@ captures/
 # Never commit signing keys
 *.jks
 *.keystore
+# Server secrets and local data
+*.env
+server/data/
+data/

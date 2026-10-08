@@ -1,5 +1,7 @@
 package com.yourco.lending.matching
 
+import kotlinx.serialization.Serializable
+
 /*
  * Everything the borrower tells us during discovery. Every choice is typed so
  * the UI shows selection cards, never free text, and the engine never has to
@@ -75,6 +77,7 @@ enum class Question(val prompt: String) {
     MONTHLY_DEBT("How much does the business pay each month on existing loans or advances?"),
 }
 
+@Serializable
 data class DiscoveryAnswers(
     val businessType: BusinessType? = null,
     /** Two-letter USPS code, e.g. "AL". */
@@ -98,5 +101,17 @@ data class DiscoveryAnswers(
         Question.REQUESTED_AMOUNT -> requestedAmount != null && requestedAmount > 0
         Question.CREDIT -> credit != null
         Question.MONTHLY_DEBT -> monthlyDebtPayments != null && monthlyDebtPayments >= 0
+    }
+
+    /** Values the app can never produce. The server rejects a lead that has any. */
+    fun problems(): List<String> = buildList {
+        if (state != null && US_STATES.none { it.first == state }) add("Unknown state.")
+        if (requestedAmount != null && requestedAmount !in 1..MAX_DOLLARS) add("Requested amount is out of range.")
+        if (monthlyDebtPayments != null && monthlyDebtPayments !in 0..MAX_DOLLARS) add("Monthly debt is out of range.")
+    }
+
+    companion object {
+        /** $1 billion. Anything above this is a typo or junk. */
+        const val MAX_DOLLARS = 1_000_000_000L
     }
 }

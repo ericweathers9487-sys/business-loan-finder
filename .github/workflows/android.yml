@@ -3,6 +3,7 @@ name: Build Android app
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 jobs:
@@ -13,6 +14,9 @@ jobs:
       contents: write
     env:
       HAS_SIGNING_KEY: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
+      # Repo variable (Settings → Secrets and variables → Actions → Variables).
+      # Unset = leads stay on the phone (test mode). See server/README.md.
+      LEAD_ENDPOINT: ${{ vars.LEAD_ENDPOINT }}
 
     steps:
       - uses: actions/checkout@v4
@@ -28,11 +32,11 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x gradlew
 
-      - name: Run unit tests
-        run: ./gradlew testDebugUnitTest
+      - name: Run unit tests (eligibility engine, app, server)
+        run: ./gradlew :core:test testDebugUnitTest :server:test
 
       - name: Build test APK
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleDebug -PleadEndpoint="$LEAD_ENDPOINT"
 
       - name: Upload test APK
         uses: actions/upload-artifact@v4
@@ -68,7 +72,7 @@ jobs:
           RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-        run: ./gradlew bundleRelease -PversionCode=${{ github.run_number }}
+        run: ./gradlew bundleRelease -PversionCode=${{ github.run_number }} -PleadEndpoint="$LEAD_ENDPOINT"
 
       - name: Upload Play Store bundle
         if: env.HAS_SIGNING_KEY == 'true'
@@ -76,3 +80,13 @@ jobs:
         with:
           name: play-store-bundle
           path: app/build/outputs/bundle/release/*.aab
+
+  # The lead server's container image, built (not published) to catch Dockerfile breakage.
+  server-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build server image
+        run: docker build -t loan-finder-server .

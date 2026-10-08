@@ -15,4 +15,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "BusinessLoanFinder"
-include(":app")
+// :core is the eligibility engine and the app↔server lead format, shared by both.
+include(":core", ":app", ":server")

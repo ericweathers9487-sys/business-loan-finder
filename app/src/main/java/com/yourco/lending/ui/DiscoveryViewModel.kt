@@ -42,6 +42,8 @@ data class UiState(
     val result: DiscoveryResult? = null,
     val contact: BorrowerContact = BorrowerContact("", "", "", ""),
     val consentChecked: Boolean = false,
+    /** New for each visit to a consent screen; reused if the borrower retries a failed send. */
+    val submissionId: String = "",
     val showContactErrors: Boolean = false,
     val sending: Boolean = false,
     val sendError: String? = null,
@@ -116,6 +118,7 @@ class DiscoveryViewModel(
             it.copy(
                 screen = Screen.Consent(productId),
                 consentChecked = false,
+                submissionId = UUID.randomUUID().toString(),
                 showContactErrors = false,
                 sendError = null,
             )
@@ -150,7 +153,7 @@ class DiscoveryViewModel(
                     if (decision.lead.card.isSample || remoteSink == null) localSink else remoteSink
                 _state.update { it.copy(sending = true, sendError = null) }
                 viewModelScope.launch {
-                    when (val r = sink.submit(decision.lead)) {
+                    when (val r = sink.submit(decision.lead, s.submissionId)) {
                         is SubmitResult.Sent -> _state.update {
                             it.copy(sending = false, screen = Screen.Sent(match.product.lenderName, r.testMode))
                         }
