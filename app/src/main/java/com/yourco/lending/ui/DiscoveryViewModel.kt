@@ -66,6 +66,9 @@ class DiscoveryViewModel(
     private val borrowerRef = "b-" + UUID.randomUUID().toString().take(8)
     private val questions = Question.entries
 
+    /** True when a lead for this product would stay on the phone instead of reaching the lender. */
+    fun staysOnDevice(product: LenderProduct): Boolean = product.isSample || remoteSink == null
+
     fun start() = go(Screen.Ask(questions.first()))
 
     fun answer(transform: (DiscoveryAnswers) -> DiscoveryAnswers) {
