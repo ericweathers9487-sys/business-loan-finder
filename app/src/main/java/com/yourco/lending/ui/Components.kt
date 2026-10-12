@@ -56,6 +56,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
@@ -196,9 +197,12 @@ fun ChoiceCard(
 ) {
     val c = MaterialTheme.colorScheme
     val shape = RoundedCornerShape(if (compact) 16.dp else 18.dp)
+    // White cards on a near-white page need a little lift to read as tappable. Shadows don't show in dark mode.
+    val lift = if (!selected && c.background.luminance() > 0.5f) 2.dp else 0.dp
     Surface(
         modifier = modifier
             .fillMaxWidth()
+            .shadow(lift, shape, ambientColor = Brand.Ink.copy(alpha = 0.08f), spotColor = Brand.Ink.copy(alpha = 0.14f))
             .clip(shape)
             .selectable(selected = selected, onClick = onClick, role = Role.RadioButton),
         shape = shape,
@@ -308,6 +312,8 @@ fun HeroPanel(
             .fillMaxWidth()
             .clip(RoundedCornerShape(28.dp))
             .background(brush)
+            // Keeps the panel's edge visible against the near-black page in dark mode.
+            .border(1.dp, Color.White.copy(alpha = 0.08f), RoundedCornerShape(28.dp))
             .drawBehind {
                 drawCircle(
                     Brush.radialGradient(

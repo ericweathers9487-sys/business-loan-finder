@@ -63,26 +63,29 @@ fun ConsentScreen(screen: Screen.Consent, state: UiState, vm: DiscoveryViewModel
                 }
             }
         }
-        item {
-            Callout(
-                icon = Icons.Filled.Lock,
-                text = "Your details are encrypted and go only to ${product.lenderName}. " +
-                    "They see your name and contact info only if they accept your request.",
-                tint = c.primary,
-                container = c.primaryContainer,
-                onContainer = c.onPrimaryContainer,
-            )
-        }
-        if (product.isSample) {
+        if (vm.staysOnDevice(product)) {
             item {
                 Callout(
                     icon = Icons.Filled.Info,
-                    text = Disclosures.SAMPLE_LENDER_NOTE,
+                    text = if (product.isSample) Disclosures.SAMPLE_LENDER_NOTE
+                    else "Test mode: this build isn't connected to a server. Your details stay on this phone and nothing is sent to ${product.lenderName}.",
                     tint = c.tertiary,
                     container = c.tertiaryContainer,
                     onContainer = c.onTertiaryContainer,
                 )
             }
+        } else {
+            item {
+                Callout(
+                    icon = Icons.Filled.Lock,
+                    text = "Your details are encrypted and go only to ${product.lenderName}. " +
+                        "They see your name and contact info only if they accept your request.",
+                    tint = c.primary,
+                    container = c.primaryContainer,
+                    onContainer = c.onPrimaryContainer,
+                )
+            }
+            item { FinePrint(Disclosures.HOW_SHARING_WORKS) }
         }
 
         item {
@@ -199,7 +202,7 @@ private fun ContactField(
         leadingIcon = { Icon(icon, contentDescription = null) },
         singleLine = true,
         shape = RoundedCornerShape(16.dp),
-        colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = c.outlineVariant),
+        colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = c.outline),
         keyboardOptions = KeyboardOptions(
             capitalization = capitalization,
             keyboardType = keyboardType,

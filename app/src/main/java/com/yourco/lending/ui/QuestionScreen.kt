@@ -16,9 +16,13 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -36,6 +40,7 @@ import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.yourco.lending.matching.BusinessType
@@ -53,6 +58,7 @@ fun QuestionScreen(screen: Screen.Ask, state: UiState, vm: DiscoveryViewModel) {
     val all = Question.entries
     val index = all.indexOf(q)
     val a = state.answers
+    var stateQuery by rememberSaveable { mutableStateOf("") }
 
     ScreenFrame(onBack = { vm.back() }, progress = (index + 1f) / all.size, stepLabel = "${index + 1} of ${all.size}") {
         item {
@@ -68,8 +74,15 @@ fun QuestionScreen(screen: Screen.Ask, state: UiState, vm: DiscoveryViewModel) {
                 })
             }
 
-            Question.STATE -> items(US_STATES.chunked(2)) { pair ->
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Question.STATE -> {
+                val q = stateQuery.trim()
+                val shown = if (q.isEmpty()) US_STATES
+                else US_STATES.filter { (code, name) -> name.contains(q, ignoreCase = true) || code.equals(q, ignoreCase = true) }
+                item { StateSearch(stateQuery, onChange = { stateQuery = it }) }
+                if (shown.isEmpty()) {
+                    item { FinePrint("No state matches \"$q\".") }
+                }
+                items(shown.chunked(2)) { pair -> Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     pair.forEach { (code, name) ->
                         ChoiceCard(name, selected = a.state == code, compact = true, modifier = Modifier.weight(1f), onClick = {
                             vm.answer { it.copy(state = code) }
@@ -77,7 +90,7 @@ fun QuestionScreen(screen: Screen.Ask, state: UiState, vm: DiscoveryViewModel) {
                         })
                     }
                     if (pair.size == 1) Spacer(Modifier.weight(1f))
-                }
+                } }
             }
 
             Question.TIME_IN_BUSINESS -> items(TimeInBusiness.entries) { t ->
@@ -204,6 +217,25 @@ private fun AmountInput(
         Spacer(Modifier.height(4.dp))
         GradientButton("Continue", onClick = submit, enabled = valid)
     }
+}
+
+@Composable
+private fun StateSearch(query: String, onChange: (String) -> Unit) {
+    val c = MaterialTheme.colorScheme
+    OutlinedTextField(
+        value = query,
+        onValueChange = { onChange(it.take(30)) },
+        placeholder = { Text("Search states") },
+        leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+        trailingIcon = if (query.isEmpty()) null else {
+            { IconButton(onClick = { onChange("") }) { Icon(Icons.Filled.Close, contentDescription = "Clear search") } }
+        },
+        singleLine = true,
+        shape = RoundedCornerShape(16.dp),
+        colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = c.outline),
+        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Search),
+        modifier = Modifier.fillMaxWidth(),
+    )
 }
 
 @Composable

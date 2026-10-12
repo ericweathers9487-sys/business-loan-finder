@@ -32,12 +32,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.yourco.lending.R
 import com.yourco.lending.matching.Disclosures
+import com.yourco.lending.matching.Question
 
 @Composable
 fun WelcomeScreen(onStart: () -> Unit) {
     val uriHandler = LocalUriHandler.current
     val privacyUrl = stringResource(R.string.privacy_policy_url)
     val c = MaterialTheme.colorScheme
+    val questionCount = Question.entries.size
 
     ScreenFrame(onBack = null) {
         item {
@@ -59,7 +61,7 @@ fun WelcomeScreen(onStart: () -> Unit) {
                     color = Color.White,
                 )
                 Text(
-                    "Answer 8 quick questions about your home services business. " +
+                    "Answer $questionCount quick questions about your home services business. " +
                         "See likely options, amounts, and the reasons behind each one.",
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color.White.copy(alpha = 0.78f),
@@ -67,7 +69,7 @@ fun WelcomeScreen(onStart: () -> Unit) {
                 Spacer(Modifier.height(8.dp))
                 Row(Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     GlassStat("2 min", "to finish", Modifier.weight(1f).fillMaxHeight())
-                    GlassStat("8", "questions", Modifier.weight(1f).fillMaxHeight())
+                    GlassStat("$questionCount", "questions", Modifier.weight(1f).fillMaxHeight())
                     GlassStat("0", "credit checks", Modifier.weight(1f).fillMaxHeight())
                 }
             }

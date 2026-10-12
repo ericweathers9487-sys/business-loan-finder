@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -56,6 +57,11 @@ fun ResultsScreen(state: UiState, vm: DiscoveryViewModel) {
             items(r.matches, key = { "match-" + it.product.id }) { m ->
                 MatchCard(m, onChoose = { vm.chooseLender(m.product.id) })
             }
+        }
+
+        val oneAway = r.nearMisses.filter { it.disqualifiers.size == 1 && it.disqualifiers.first().fix != null }
+        if (oneAway.isNotEmpty()) {
+            item { OneChangeAwayCard(oneAway) }
         }
 
         if (r.nearMisses.isNotEmpty()) {
@@ -150,13 +156,27 @@ private fun MatchCard(m: ProductMatch, onChoose: () -> Unit) {
             m.likelyRange?.let { StatTile("Likely amount", compactRange(it), Modifier.weight(1f)) }
             StatTile("Term", "${p.termMonths.first}–${p.termMonths.last} mo", Modifier.weight(1f))
         }
+        // Concerns always show; strengths past the first few wait behind the toggle so cards stay scannable.
+        val shownStrengths = m.strengths.take(TOP_STRENGTHS)
+        val moreStrengths = m.strengths.drop(TOP_STRENGTHS)
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            m.strengths.forEach { ReasonRow(ReasonKind.GOOD, it) }
+            shownStrengths.forEach { ReasonRow(ReasonKind.GOOD, it) }
             m.concerns.forEach { ReasonRow(ReasonKind.WATCH, it) }
+            AnimatedVisibility(showWhy && moreStrengths.isNotEmpty()) {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    moreStrengths.forEach { ReasonRow(ReasonKind.GOOD, it) }
+                }
+            }
         }
 
         TextButton(onClick = { showWhy = !showWhy }) {
-            Text(if (showWhy) "Hide score details" else "Why this score?")
+            Text(
+                when {
+                    showWhy -> "Hide details"
+                    moreStrengths.isNotEmpty() -> "${moreStrengths.size} more reasons and the score"
+                    else -> "Why this score?"
+                }
+            )
             Icon(Icons.Filled.KeyboardArrowDown, contentDescription = null, modifier = Modifier.padding(start = 4.dp).rotate(arrow))
         }
         AnimatedVisibility(showWhy) {
@@ -182,8 +202,40 @@ private fun MatchCard(m: ProductMatch, onChoose: () -> Unit) {
     }
 }
 
+/** Lenders that a single change would open, with that change. The quickest path to more options. */
+@Composable
+private fun OneChangeAwayCard(misses: List<ProductMatch>) {
+    val c = MaterialTheme.colorScheme
+    Panel {
+        Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
+            IconBadge(Icons.Filled.Star, tint = c.primary, background = SolidColor(c.primaryContainer))
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text("One change away", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    count(misses.size, "lender", "lenders") + " could fit with one change.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = c.onSurfaceVariant,
+                )
+            }
+        }
+        misses.forEach { m ->
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .background(c.surfaceVariant, RoundedCornerShape(16.dp))
+                    .padding(14.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Text(m.product.lenderName, style = MaterialTheme.typography.titleSmall)
+                Text(m.disqualifiers.first().fix.orEmpty(), style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+    }
+}
+
 @Composable
 private fun NearMissCard(m: ProductMatch) {
+    var expanded by rememberSaveable("miss-" + m.product.id) { mutableStateOf(false) }
     val c = MaterialTheme.colorScheme
     Panel(muted = true) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -193,7 +245,9 @@ private fun NearMissCard(m: ProductMatch) {
             }
             if (m.product.isSample) Pill("Sample lender", c.tertiaryContainer, c.onTertiaryContainer)
         }
-        m.disqualifiers.forEach { d ->
+        // The first reason is the one most worth knowing; the rest open on request.
+        val shown = if (expanded) m.disqualifiers else m.disqualifiers.take(1)
+        shown.forEach { d ->
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 ReasonRow(ReasonKind.BLOCKER, d.reason)
                 d.fix?.let {
@@ -204,6 +258,12 @@ private fun NearMissCard(m: ProductMatch) {
                         modifier = Modifier.padding(start = 30.dp),
                     )
                 }
+            }
+        }
+        val hidden = m.disqualifiers.size - 1
+        if (hidden > 0) {
+            TextButton(onClick = { expanded = !expanded }) {
+                Text(if (expanded) "Show less" else count(hidden, "more reason", "more reasons"))
             }
         }
     }
@@ -229,3 +289,5 @@ private fun ScoreRow(label: String, points: Int, signed: Boolean = true) {
 }
 
 private fun count(n: Int, one: String, many: String) = "$n ${if (n == 1) one else many}"
+
+private const val TOP_STRENGTHS = 3
