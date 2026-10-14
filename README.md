@@ -1,4 +1,4 @@
-# Business Loan Finder (beta)
+AI A....# Business Loan Finder (beta)
 
 An Android app that helps home services businesses see which business loans they're likely to fit, explains why, and sends their details to a lender only when they choose to. It is loan discovery and referral, not a loan application or approval.
 
