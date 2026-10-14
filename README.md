@@ -1,4 +1,4 @@
-AI A....# Business Loan Finder (beta)
+.AI A....# Business Loan Finder (beta)
 
 An Android app that helps home services businesses see which business loans they're likely to fit, explains why, and sends their details to a lender only when they choose to. It is loan discovery and referral, not a loan application or approval.
 
@@ -6,7 +6,7 @@ An Android app that helps home services businesses see which business loans they
 
 1. Eight quick questions, all tap-to-answer except the two dollar amounts.
 2. Every lender product is checked against its own rules. Each result is one of three states: **likely eligible**, **likely not eligible**, or **more info needed**.
-3. Matches show a fit score out of 100, a likely amount range, and the reasons behind the score. Every point of the score has a written reason.
+3. Matches show a Cit score out of 100, a likely amount range, and the reasons behind the score. Every point of the score has a written reason.
 4. Non-matches show what's blocking them and, when possible, what would change the result.
 5. The borrower picks a lender, enters contact details, and checks a consent box for that specific lender. Only then is a lead created. Leads below a lender's minimum fit score are never sent.
 6. The lead server checks the lead again with the same rules, stores it encrypted, and alerts the lender. The lender sees an anonymized summary and gets the borrower's contact details only after accepting.
