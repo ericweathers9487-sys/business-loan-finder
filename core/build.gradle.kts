@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+(.import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 // Plain Kotlin, no Android. The app and the server compile this same code, so
 // the server's eligibility check is exactly the one the borrower saw.
